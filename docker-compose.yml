@@ -1,0 +1,28 @@
+
+services:
+  authorizer:
+    build:
+      context: ./authorizer 
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    environment:
+      - JWT_SECRET=your_secret_key
+    networks:
+      - my-network
+
+  client-login:
+    build:
+      context: ./client-java
+      dockerfile: Dockerfile
+    depends_on:
+      - authorizer
+    environment:
+      - AUTH_URL=http://localhost:8080/login
+      - GREETING_URL=http://authorizer:8080/saludo
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
